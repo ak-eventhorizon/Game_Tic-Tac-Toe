@@ -1,3 +1,5 @@
+// need refactor with USE STRICT
+
 var turn_number; //счетчик номеров хода
 var FIELD_SIZE = 3; //размер игрового поля по умолчанию
 var gameMatrix = []; //матрица игры - двумерный массив
