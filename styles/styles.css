@@ -2,13 +2,142 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    justify-content: center;
 }
 
 .main {
     display: grid;
     grid-template-rows: 10vmin 80vmin 10vmin;
-    grid-template-columns: 100vmin;
+    grid-template-columns: 80vmin;
 }
+
+.interface {
+    display: grid;
+    grid-template-columns: 10vmin 1fr 10vmin;
+}
+
+.interface .turn_x {
+    background-image: url('../icons/sword.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.interface .turn_o {
+    background-image: url('../icons/shield.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: left center;    
+}
+
+.size {
+    display: grid;
+    justify-items: center;
+    align-items: center;
+}
+
+.size .size_select {
+    height: 90%;
+    font-size: 2rem;
+    font-weight: 600;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.interface .ng_btn {
+    background-image: url('../icons/game.svg');
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    background-position: right center;
+    border-radius: 10px;    
+}
+
+.interface .ng_btn:hover {
+    cursor: pointer;
+}
+
+.interface .ng_btn:active {
+    background-color: #dddddd;
+}
+
+.field {
+    display: grid;
+    gap: 1px;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+}
+
+.cell {
+    border: 1px solid;
+    border-radius: 4px;
+}
+
+.empty:hover {
+    cursor:pointer;
+    background-color: #cdedcd;
+}
+
+.not_empty{
+    background-color: #dcdcdc;
+}
+
+.cell_x {
+    display: grid;
+    background-image: url('../icons/sword.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cell_o {
+    display: grid;
+    background-image: url('../icons/shield.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cell_win {
+    background-color: #ffb3b3;
+} 
+
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.stats .stat_left {
+    display: grid;
+    background-image: url('../icons/sword.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.stats .stat_right {
+    display: grid;
+    background-image: url('../icons/shield.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+.score {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 0 10px;
+    margin: auto;
+}
+
+.score_x {
+    margin: auto 10vmin auto auto;
+}
+
+.score_o {
+    margin: auto auto auto 10vmin;
+}
+
 /* .main {
     width: fit-content;
     margin: auto;
