@@ -5,6 +5,11 @@
 }
 
 .main {
+    display: grid;
+    grid-template-rows: 10vmin 80vmin 10vmin;
+    grid-template-columns: 100vmin;
+}
+/* .main {
     width: fit-content;
     margin: auto;
 }
@@ -93,4 +98,4 @@
 
 .win {
     background-color: #ffb3b3;
-}
+} */
