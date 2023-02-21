@@ -2,95 +2,140 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    justify-content: center;
 }
 
 .main {
-    width: fit-content;
-    margin: auto;
+    display: grid;
+    grid-template-rows: 10vmin 80vmin 10vmin;
+    grid-template-columns: 80vmin;
 }
 
 .interface {
-    width: 600px;
-    height: 50px;
-    line-height: 50px;
-    margin: 5px 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: 10vmin 1fr 10vmin;
+}
+
+.interface .turn_x {
+    background-image: url('../icons/sword.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.interface .turn_o {
+    background-image: url('../icons/shield.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: left center;    
+}
+
+.size {
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-items: center;
     align-items: center;
-    justify-content: space-around;
-    font-size: 25px;
-    font-weight: 600;
 }
 
-.turn {
-    border-radius: 5px;
-    color: black;
-    background-color: #ffb3b3;
-}
-
-.stat {
-    border-radius: 5px;
-    color: black;
-    background-color: #cce0ff;
-}
-
-.select {
-    width: 100px;
-    height: 50px;
-    font-size: 25px;
+.size .size_select {
+    height: 90%;
+    width: 90%;
+    font-size: 2rem;
     font-weight: 600;
     border-radius: 10px;
-    background-color: #ffffcc;
     text-align: center;
     cursor: pointer;
 }
 
-.button {
-    height: 50px;
-    border: 1px solid black;
-    border-radius: 5px;
-    color: black;
-    background-color: #90ee90;
+.interface .ng_btn {
+    background-image: url('../icons/refresh.svg');
+    background-size: auto 85%;
+    background-repeat: no-repeat;
+    background-position: right center;
+    border-radius: 10px;    
 }
 
-.button:hover {
+.interface .ng_btn:hover {
     cursor: pointer;
-    background-color: #38e038;
 }
 
-.button:active {
-    background-color: #1fc71f;
+.interface .ng_btn:active {
+    background-color: #dddddd;
 }
 
-.field_wrapper {
-    width: 600px;
-    display: flex;
-    justify-content: center;
-}
-
-.line {
-    display: flex;
+.field {
+    display: grid;
+    gap: 1px;
+    grid-template: repeat(3, 1fr) / repeat(3, 1fr);
 }
 
 .cell {
-    width: 58px;
-    height: 58px;
-    border: 1px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 52px;
-    font-weight: 700;
+    border: 1px solid;
+    border-radius: 4px;
 }
 
 .empty:hover {
     cursor:pointer;
-    background-color: #90ee90;
+    background-color: #cdedcd;
 }
 
 .not_empty{
-    background-color: #d3d3d3;
+    background-color: #dcdcdc;
 }
 
-.win {
+.cell_x {
+    display: grid;
+    background-image: url('../icons/sword.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cell_o {
+    display: grid;
+    background-image: url('../icons/shield.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cell_win {
     background-color: #ffb3b3;
+} 
+
+.stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.stats .stat_left {
+    display: grid;
+    background-image: url('../icons/sword.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.stats .stat_right {
+    display: grid;
+    background-image: url('../icons/shield.svg');
+    background-size: auto 90%;
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+.score {
+    font-size: 2rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 0 10px;
+    margin: auto;
+}
+
+.score_x {
+    margin: auto 10vmin auto auto;
+}
+
+.score_o {
+    margin: auto auto auto 10vmin;
 }

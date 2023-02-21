@@ -15,53 +15,49 @@
     <div class="main">
 
         <div class="interface">
-
-            <!-- образец генерируемой структуры
-            
-            <div class="turn">Turn: X</div>
-            <div class="stat">Wins: X = 0; O = 0</div>
-            <select class="select">
-                <option value="3">3x3</option>
-                <option value="4">4x4</option>
-                <option value="5">5x5</option>
-                <option value="6">6x6</option>
-                <option value="7">7x7</option>
-                <option value="8">8x8</option>
-                <option value="9">9x9</option>
-                <option value="10">10x10</option>
-            </select>
-            <div class="button">New Game</div>-->
-
+            <div class="turn turn_x"></div>
+            <div class="size">
+                <select class="size_select">
+                    <option value="3">3x3</option>
+                    <option value="4">4x4</option>
+                    <option value="5">5x5</option>
+                    <option value="6">6x6</option>
+                    <option value="7">7x7</option>
+                    <option value="8">8x8</option>
+                    <option value="9">9x9</option>
+                    <option value="10">10x10</option>
+                </select>
+            </div>
+            <div class="ng_btn"></div>
         </div>
 
-        <div class="field_wrapper">
-            <div class="field">
-
-                <!-- образец генерируемой структуры
-                
-            <div class="line line-0">
-                <div class="cell empty" id='0-0'></div>
-                <div class="cell empty" id='1-0'></div>
-                <div class="cell empty" id='2-0'></div>
-            </div>
-            <div class="line line-1">
-                <div class="cell empty" id='0-1'></div>
-                <div class="cell empty" id='1-1'></div>
-                <div class="cell empty" id='2-1'></div>
-            </div>
-            <div class="line line-2">
-                <div class="cell empty" id='0-2'></div>
-                <div class="cell empty" id='1-2'></div>
-                <div class="cell empty" id='2-2'></div>
-            </div>
+        <div class="field">
             
--->
-
-            </div>
+            <!-- Пример структуры блока: -->
+            <!-- 
+            <div class="cell empty" id='0-0'></div>
+            <div class="cell not_empty" id='0-1'></div>
+            <div class="cell not_empty cell_x" id='0-2'></div>
+            <div class="cell not_empty cell_o" id='1-0'></div>
+            <div class="cell not_empty cell_win" id='1-1'></div>
+            <div class="cell empty" id='1-2'></div>
+            <div class="cell empty" id='2-0'></div>
+            <div class="cell empty" id='2-1'></div>
+            <div class="cell empty" id='2-2'></div> 
+            -->
+            
         </div>
 
+        <div class="stats">
+            <div class="stat_left">
+                <div class="score score_x">0</div>
+            </div>
+            <div class="stat_right">
+                <div class="score score_o">0</div>
+            </div>
+        </div>
+        
     </div>
-
 </body>
 
 </html>
