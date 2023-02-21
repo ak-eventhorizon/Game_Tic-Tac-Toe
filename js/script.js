@@ -1,14 +1,14 @@
 'use strict';
 
-let FIELD_SIZE = 3; //размер игрового поля по умолчанию
+let FIELD_SIZE = 3; // размер игрового поля по умолчанию
 let isTurnX = true; // по умолчанию первым ходит X
 let scoreX = 0; // счет побед Х
 let scoreO = 0; // счет побед О
-let gameMatrix = []; //матрица игры - двумерный массив
+let gameMatrix = []; // матрица игры - двумерный массив - перегенерация и анализ матрицы на победную комбинацию происходит после каждого хода
 
 
 resetUIforNewGame();
-// обработка изменения селекта по выбору размера поля - перегенерить поле
+// обработка изменения выбора размера поля - перегенерация поля при изменении
 document.querySelector('.size_select').addEventListener('change', resetUIforNewGame);
 // обработка нажатия кнопки
 document.querySelector('.ng_btn').addEventListener('click', resetUIforNewGame);
@@ -26,34 +26,31 @@ function generateField(size) {
         for (let j = 0; j < size; j++) {
             let elem = document.createElement('div');
             elem.className = 'cell empty';
-            elem.id = `${j}-${i}`; //id - координаты X-Y
+            elem.id = `${j}-${i}`; // id - координаты X-Y
             field.appendChild(elem);
         }
     }
 }
 
 function resetUIforNewGame() {
-    //сброс хода на X
+    // сброс хода на X
     isTurnX = true;
-    //установка указателя ходов в интерфейсе на крестики
+    // установка указателя ходов в интерфейсе на крестики
     document.querySelector('.turn').classList.value = 'turn turn_x';
-    //FIELD_SIZE меняется на value того option, который выбран
+    // FIELD_SIZE меняется на value того option, который выбран
     let option = document.querySelector('.size_select').getElementsByTagName('option');
     for (let i = 0; i < option.length; i++) {
         if (option[i].selected === true) {
             FIELD_SIZE = +option[i].value;
         }
     }
-    //перегенерация игрового поля начисто
+    // перегенерация игрового поля начисто
     generateField(FIELD_SIZE);
-    //заполнение полей со статистикой побед
+    // заполнение полей со статистикой побед
     document.querySelector('.score_x').innerHTML = +scoreX;
     document.querySelector('.score_o').innerHTML = +scoreO;
-    //запуск ожидания клика по ячейкам
-    addEventListenerOnCellsClick();
-}
-
-function addEventListenerOnCellsClick() {
+    
+    // навешивание на все ячейки обработчика клика
     let cells = document.getElementsByClassName('cell');
     for (let i = 0; i < cells.length; i++) {
         cells[i].onclick = playerTurn;
@@ -61,13 +58,13 @@ function addEventListenerOnCellsClick() {
 }
 
 function playerTurn() {
-    //действия по клику производятся над ячейкой, только если она пустая
+    // действия по клику производятся над ячейкой, только если она пустая
     if (this.classList[1] === 'empty') {
-        //изменение класса ячейки при клике на нее
+        // изменение класса ячейки при клике на нее
         this.classList.toggle('empty');
         this.classList.toggle('not_empty');
 
-        //установка в ячейку символа ходящего и смена индикатора следующего хода
+        // установка в ячейку символа ходящего игрока и смена индикатора следующего хода
         if (isTurnX){
            this.classList.add('cell_x');
            document.querySelector('.turn').classList.value = 'turn turn_o';
@@ -76,13 +73,13 @@ function playerTurn() {
            document.querySelector('.turn').classList.value = 'turn turn_x';
         }
 
-        //перегенерация матрицы игры после каждого хода
+        // перегенерация матрицы игры после каждого хода
         gameMatrixGenerate();
 
-        //проверка состояния партии
-        let clickedCellCoordXY = this.id.split('-');
+        // проверка состояния партии
+        let clickedCellXY = this.id.split('-');
         // победа достигнута
-        if (checkResult(clickedCellCoordXY)) {
+        if (isWinAchieved(clickedCellXY)) {
             finishTheGameWin();
         }
         // продолжение партии
@@ -122,73 +119,73 @@ function gameMatrixGenerate() {
     gameMatrix[FIELD_SIZE + 3] = [];
 }
 
-function checkResult(xy) {
-    // проверка результата игры на выигрыш
+function isWinAchieved(xy) {
+    // проверка результата игры на выигрыш - данная функция проверяет все возможные победные комбинации относительно текущей ячейки
     // на вход XY кликнутой ячейки - на выход true/false
     
     let x = +xy[0]; // координата X из id
     let y = +xy[1]; // координата Y из id
-    let gm = gameMatrix[y][x];
+    let checkingCell = gameMatrix[y][x]; // проверяемая ячейка
 
     // проверка на три в ряд с добавлением класса выигрывшим ячейкам
     if (FIELD_SIZE <= 4) {
 
-        if (gm === gameMatrix[y - 1][x] && gm === gameMatrix[y + 1][x]) {
+        if (checkingCell === gameMatrix[y - 1][x] && checkingCell === gameMatrix[y + 1][x]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y-1)).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y+1)).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y][x - 1] && gm === gameMatrix[y][x + 1]) {
+        } else if (checkingCell === gameMatrix[y][x - 1] && checkingCell === gameMatrix[y][x + 1]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+y).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y + 1][x - 1] && gm === gameMatrix[y - 1][x + 1]) {
+        } else if (checkingCell === gameMatrix[y + 1][x - 1] && checkingCell === gameMatrix[y - 1][x + 1]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y+1)).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y-1)).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y - 1][x - 1] && gm === gameMatrix[y + 1][x + 1]) {
+        } else if (checkingCell === gameMatrix[y - 1][x - 1] && checkingCell === gameMatrix[y + 1][x + 1]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y-1)).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y+1)).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y - 1][x] && gm === gameMatrix[y - 2][x]) {
+        } else if (checkingCell === gameMatrix[y - 1][x] && checkingCell === gameMatrix[y - 2][x]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y-1)).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y-2)).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y - 1][x + 1] && gm === gameMatrix[y - 2][x + 2]) {
+        } else if (checkingCell === gameMatrix[y - 1][x + 1] && checkingCell === gameMatrix[y - 2][x + 2]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y-1)).classList.toggle('cell_win');
             document.getElementById((x+2)+'-'+(y-2)).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y][x + 1] && gm === gameMatrix[y][x + 2]) {
+        } else if (checkingCell === gameMatrix[y][x + 1] && checkingCell === gameMatrix[y][x + 2]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+2)+'-'+y).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y + 1][x + 1] && gm === gameMatrix[y + 2][x + 2]) {
+        } else if (checkingCell === gameMatrix[y + 1][x + 1] && checkingCell === gameMatrix[y + 2][x + 2]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y+1)).classList.toggle('cell_win');
             document.getElementById((x+2)+'-'+(y+2)).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y + 1][x] && gm === gameMatrix[y + 2][x]) {
+        } else if (checkingCell === gameMatrix[y + 1][x] && checkingCell === gameMatrix[y + 2][x]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y+1)).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y+2)).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y + 1][x - 1] && gm === gameMatrix[y + 2][x - 2]) {
+        } else if (checkingCell === gameMatrix[y + 1][x - 1] && checkingCell === gameMatrix[y + 2][x - 2]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y+1)).classList.toggle('cell_win');
             document.getElementById((x-2)+'-'+(y+2)).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y][x - 1] && gm === gameMatrix[y][x - 2]) {
+        } else if (checkingCell === gameMatrix[y][x - 1] && checkingCell === gameMatrix[y][x - 2]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-2)+'-'+y).classList.toggle('cell_win');
             return true;
-        } else if (gm === gameMatrix[y - 1][x - 1] && gm === gameMatrix[y - 2][x - 2]) {
+        } else if (checkingCell === gameMatrix[y - 1][x - 1] && checkingCell === gameMatrix[y - 2][x - 2]) {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y-1)).classList.toggle('cell_win');
             document.getElementById((x-2)+'-'+(y-2)).classList.toggle('cell_win');
@@ -201,10 +198,10 @@ function checkResult(xy) {
     // проверка на пять в ряд с добавлением класса выигрывшим ячейкам
     else if (FIELD_SIZE > 4) {
 
-        if(gm === gameMatrix[y - 1][x] && 
-            gm === gameMatrix[y - 2][x] && 
-            gm === gameMatrix[y - 3][x] && 
-            gm === gameMatrix[y - 4][x])
+        if(checkingCell === gameMatrix[y - 1][x] && 
+            checkingCell === gameMatrix[y - 2][x] && 
+            checkingCell === gameMatrix[y - 3][x] && 
+            checkingCell === gameMatrix[y - 4][x])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y-1)).classList.toggle('cell_win');
@@ -212,10 +209,10 @@ function checkResult(xy) {
             document.getElementById(x+'-'+(y-3)).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y-4)).classList.toggle('cell_win');
             return true;  
-        } else if(gm === gameMatrix[y + 1][x] && 
-            gm === gameMatrix[y - 1][x] && 
-            gm === gameMatrix[y - 2][x] && 
-            gm === gameMatrix[y - 3][x])
+        } else if(checkingCell === gameMatrix[y + 1][x] && 
+            checkingCell === gameMatrix[y - 1][x] && 
+            checkingCell === gameMatrix[y - 2][x] && 
+            checkingCell === gameMatrix[y - 3][x])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y+1)).classList.toggle('cell_win');
@@ -223,10 +220,10 @@ function checkResult(xy) {
             document.getElementById(x+'-'+(y-2)).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y-3)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x] && 
-            gm === gameMatrix[y + 2][x] && 
-            gm === gameMatrix[y - 1][x] && 
-            gm === gameMatrix[y - 2][x])
+        } else if(checkingCell === gameMatrix[y + 1][x] && 
+            checkingCell === gameMatrix[y + 2][x] && 
+            checkingCell === gameMatrix[y - 1][x] && 
+            checkingCell === gameMatrix[y - 2][x])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y+1)).classList.toggle('cell_win');
@@ -234,10 +231,10 @@ function checkResult(xy) {
             document.getElementById(x+'-'+(y-1)).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y-2)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x] && 
-            gm === gameMatrix[y + 2][x] && 
-            gm === gameMatrix[y + 3][x] && 
-            gm === gameMatrix[y - 1][x])
+        } else if(checkingCell === gameMatrix[y + 1][x] && 
+            checkingCell === gameMatrix[y + 2][x] && 
+            checkingCell === gameMatrix[y + 3][x] && 
+            checkingCell === gameMatrix[y - 1][x])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y+1)).classList.toggle('cell_win');
@@ -245,10 +242,10 @@ function checkResult(xy) {
             document.getElementById(x+'-'+(y+3)).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y-1)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x] && 
-            gm === gameMatrix[y + 2][x] && 
-            gm === gameMatrix[y + 3][x] && 
-            gm === gameMatrix[y + 4][x])
+        } else if(checkingCell === gameMatrix[y + 1][x] && 
+            checkingCell === gameMatrix[y + 2][x] && 
+            checkingCell === gameMatrix[y + 3][x] && 
+            checkingCell === gameMatrix[y + 4][x])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y+1)).classList.toggle('cell_win');
@@ -256,10 +253,10 @@ function checkResult(xy) {
             document.getElementById(x+'-'+(y+3)).classList.toggle('cell_win');
             document.getElementById(x+'-'+(y+4)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y][x - 1] && 
-            gm === gameMatrix[y][x - 2] && 
-            gm === gameMatrix[y][x - 3] && 
-            gm === gameMatrix[y][x - 4])
+        } else if(checkingCell === gameMatrix[y][x - 1] && 
+            checkingCell === gameMatrix[y][x - 2] && 
+            checkingCell === gameMatrix[y][x - 3] && 
+            checkingCell === gameMatrix[y][x - 4])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+y).classList.toggle('cell_win');
@@ -267,10 +264,10 @@ function checkResult(xy) {
             document.getElementById((x-3)+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-4)+'-'+y).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y][x + 1] && 
-            gm === gameMatrix[y][x - 1] && 
-            gm === gameMatrix[y][x - 2] && 
-            gm === gameMatrix[y][x - 3])
+        } else if(checkingCell === gameMatrix[y][x + 1] && 
+            checkingCell === gameMatrix[y][x - 1] && 
+            checkingCell === gameMatrix[y][x - 2] && 
+            checkingCell === gameMatrix[y][x - 3])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+y).classList.toggle('cell_win');
@@ -278,10 +275,10 @@ function checkResult(xy) {
             document.getElementById((x-2)+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-3)+'-'+y).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y][x + 1] && 
-            gm === gameMatrix[y][x + 2] && 
-            gm === gameMatrix[y][x - 1] && 
-            gm === gameMatrix[y][x - 2])
+        } else if(checkingCell === gameMatrix[y][x + 1] && 
+            checkingCell === gameMatrix[y][x + 2] && 
+            checkingCell === gameMatrix[y][x - 1] && 
+            checkingCell === gameMatrix[y][x - 2])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+y).classList.toggle('cell_win');
@@ -289,10 +286,10 @@ function checkResult(xy) {
             document.getElementById((x-1)+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-2)+'-'+y).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y][x + 1] && 
-            gm === gameMatrix[y][x + 2] && 
-            gm === gameMatrix[y][x + 3] && 
-            gm === gameMatrix[y][x - 1])
+        } else if(checkingCell === gameMatrix[y][x + 1] && 
+            checkingCell === gameMatrix[y][x + 2] && 
+            checkingCell === gameMatrix[y][x + 3] && 
+            checkingCell === gameMatrix[y][x - 1])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+y).classList.toggle('cell_win');
@@ -300,10 +297,10 @@ function checkResult(xy) {
             document.getElementById((x+3)+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+y).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y][x + 1] && 
-            gm === gameMatrix[y][x + 2] && 
-            gm === gameMatrix[y][x + 3] && 
-            gm === gameMatrix[y][x + 4])
+        } else if(checkingCell === gameMatrix[y][x + 1] && 
+            checkingCell === gameMatrix[y][x + 2] && 
+            checkingCell === gameMatrix[y][x + 3] && 
+            checkingCell === gameMatrix[y][x + 4])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+y).classList.toggle('cell_win');
@@ -311,10 +308,10 @@ function checkResult(xy) {
             document.getElementById((x+3)+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+4)+'-'+y).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y - 1][x + 1] && 
-            gm === gameMatrix[y - 2][x + 2] && 
-            gm === gameMatrix[y - 3][x + 3] && 
-            gm === gameMatrix[y - 4][x + 4])
+        } else if(checkingCell === gameMatrix[y - 1][x + 1] && 
+            checkingCell === gameMatrix[y - 2][x + 2] && 
+            checkingCell === gameMatrix[y - 3][x + 3] && 
+            checkingCell === gameMatrix[y - 4][x + 4])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y-1)).classList.toggle('cell_win');
@@ -322,10 +319,10 @@ function checkResult(xy) {
             document.getElementById((x+3)+'-'+(y-3)).classList.toggle('cell_win');
             document.getElementById((x+4)+'-'+(y-4)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x - 1] && 
-            gm === gameMatrix[y - 1][x + 1] && 
-            gm === gameMatrix[y - 2][x + 2] && 
-            gm === gameMatrix[y - 3][x + 3])
+        } else if(checkingCell === gameMatrix[y + 1][x - 1] && 
+            checkingCell === gameMatrix[y - 1][x + 1] && 
+            checkingCell === gameMatrix[y - 2][x + 2] && 
+            checkingCell === gameMatrix[y - 3][x + 3])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y+1)).classList.toggle('cell_win');
@@ -333,10 +330,10 @@ function checkResult(xy) {
             document.getElementById((x+2)+'-'+(y-2)).classList.toggle('cell_win');
             document.getElementById((x+3)+'-'+(y-3)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x - 1] && 
-            gm === gameMatrix[y + 2][x - 2] && 
-            gm === gameMatrix[y - 1][x + 1] && 
-            gm === gameMatrix[y - 2][x + 2])
+        } else if(checkingCell === gameMatrix[y + 1][x - 1] && 
+            checkingCell === gameMatrix[y + 2][x - 2] && 
+            checkingCell === gameMatrix[y - 1][x + 1] && 
+            checkingCell === gameMatrix[y - 2][x + 2])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y+1)).classList.toggle('cell_win');
@@ -344,10 +341,10 @@ function checkResult(xy) {
             document.getElementById((x+1)+'-'+(y-1)).classList.toggle('cell_win');
             document.getElementById((x+2)+'-'+(y-2)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x - 1] && 
-            gm === gameMatrix[y + 2][x - 2] && 
-            gm === gameMatrix[y + 3][x - 3] && 
-            gm === gameMatrix[y - 1][x + 1])
+        } else if(checkingCell === gameMatrix[y + 1][x - 1] && 
+            checkingCell === gameMatrix[y + 2][x - 2] && 
+            checkingCell === gameMatrix[y + 3][x - 3] && 
+            checkingCell === gameMatrix[y - 1][x + 1])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y+1)).classList.toggle('cell_win');
@@ -355,10 +352,10 @@ function checkResult(xy) {
             document.getElementById((x-3)+'-'+(y+3)).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y-1)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x - 1] && 
-            gm === gameMatrix[y + 2][x - 2] && 
-            gm === gameMatrix[y + 3][x - 3] && 
-            gm === gameMatrix[y + 4][x - 4])
+        } else if(checkingCell === gameMatrix[y + 1][x - 1] && 
+            checkingCell === gameMatrix[y + 2][x - 2] && 
+            checkingCell === gameMatrix[y + 3][x - 3] && 
+            checkingCell === gameMatrix[y + 4][x - 4])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y+1)).classList.toggle('cell_win');
@@ -366,10 +363,10 @@ function checkResult(xy) {
             document.getElementById((x-3)+'-'+(y+3)).classList.toggle('cell_win');
             document.getElementById((x-4)+'-'+(y+4)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x + 1] && 
-            gm === gameMatrix[y + 2][x + 2] && 
-            gm === gameMatrix[y + 3][x + 3] && 
-            gm === gameMatrix[y + 4][x + 4])
+        } else if(checkingCell === gameMatrix[y + 1][x + 1] && 
+            checkingCell === gameMatrix[y + 2][x + 2] && 
+            checkingCell === gameMatrix[y + 3][x + 3] && 
+            checkingCell === gameMatrix[y + 4][x + 4])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y+1)).classList.toggle('cell_win');
@@ -377,10 +374,10 @@ function checkResult(xy) {
             document.getElementById((x+3)+'-'+(y+3)).classList.toggle('cell_win');
             document.getElementById((x+4)+'-'+(y+4)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x + 1] && 
-            gm === gameMatrix[y + 2][x + 2] && 
-            gm === gameMatrix[y + 3][x + 3] && 
-            gm === gameMatrix[y - 1][x - 1])
+        } else if(checkingCell === gameMatrix[y + 1][x + 1] && 
+            checkingCell === gameMatrix[y + 2][x + 2] && 
+            checkingCell === gameMatrix[y + 3][x + 3] && 
+            checkingCell === gameMatrix[y - 1][x - 1])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y+1)).classList.toggle('cell_win');
@@ -388,10 +385,10 @@ function checkResult(xy) {
             document.getElementById((x+3)+'-'+(y+3)).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y-1)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x + 1] && 
-            gm === gameMatrix[y + 2][x + 2] && 
-            gm === gameMatrix[y - 1][x - 1] && 
-            gm === gameMatrix[y - 2][x - 2])
+        } else if(checkingCell === gameMatrix[y + 1][x + 1] && 
+            checkingCell === gameMatrix[y + 2][x + 2] && 
+            checkingCell === gameMatrix[y - 1][x - 1] && 
+            checkingCell === gameMatrix[y - 2][x - 2])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y+1)).classList.toggle('cell_win');
@@ -399,10 +396,10 @@ function checkResult(xy) {
             document.getElementById((x-1)+'-'+(y-1)).classList.toggle('cell_win');
             document.getElementById((x-2)+'-'+(y-2)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y + 1][x + 1] && 
-            gm === gameMatrix[y - 1][x - 1] && 
-            gm === gameMatrix[y - 2][x - 2] && 
-            gm === gameMatrix[y - 3][x - 3])
+        } else if(checkingCell === gameMatrix[y + 1][x + 1] && 
+            checkingCell === gameMatrix[y - 1][x - 1] && 
+            checkingCell === gameMatrix[y - 2][x - 2] && 
+            checkingCell === gameMatrix[y - 3][x - 3])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x+1)+'-'+(y+1)).classList.toggle('cell_win');
@@ -410,10 +407,10 @@ function checkResult(xy) {
             document.getElementById((x-2)+'-'+(y-2)).classList.toggle('cell_win');
             document.getElementById((x-3)+'-'+(y-3)).classList.toggle('cell_win');
             return true;
-        } else if(gm === gameMatrix[y - 1][x - 1] && 
-            gm === gameMatrix[y - 2][x - 2] && 
-            gm === gameMatrix[y - 3][x - 3] && 
-            gm === gameMatrix[y - 4][x - 4])
+        } else if(checkingCell === gameMatrix[y - 1][x - 1] && 
+            checkingCell === gameMatrix[y - 2][x - 2] && 
+            checkingCell === gameMatrix[y - 3][x - 3] && 
+            checkingCell === gameMatrix[y - 4][x - 4])
         {
             document.getElementById(x+'-'+y).classList.toggle('cell_win');
             document.getElementById((x-1)+'-'+(y-1)).classList.toggle('cell_win');
@@ -429,9 +426,8 @@ function checkResult(xy) {
 
 function finishTheGameWin() {
 
-    //смена класса всем ячейкам на not_empty для некликабельности
+    // смена класса всем ячейкам на not_empty для некликабельности
     let cells = document.getElementsByClassName('empty');
-
     // проверка, что есть хоть один блок not_empty
     if (cells[0] !== undefined) { 
         do {
@@ -441,8 +437,7 @@ function finishTheGameWin() {
         while (cells.length > 0);
     }
 
-    //изменение статистики побед в блоке stats
-    let stat = document.querySelector('.stat');
+    // изменение статистики побед в интерфейсе
     if (isTurnX) {
         ++scoreX;
         document.querySelector('.score_x').innerHTML = +scoreX;
