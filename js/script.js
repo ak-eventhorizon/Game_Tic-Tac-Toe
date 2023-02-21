@@ -27,6 +27,7 @@ function generateField(size) {
             let elem = document.createElement('div');
             elem.className = 'cell empty';
             elem.id = `${j}-${i}`; // id - координаты X-Y
+            elem.onclick = playerTurn; // навешивание на ячейку обработчика клика
             field.appendChild(elem);
         }
     }
@@ -50,40 +51,46 @@ function resetUIforNewGame() {
     document.querySelector('.score_x').innerHTML = +scoreX;
     document.querySelector('.score_o').innerHTML = +scoreO;
     
-    // навешивание на все ячейки обработчика клика
-    let cells = document.getElementsByClassName('cell');
-    for (let i = 0; i < cells.length; i++) {
-        cells[i].onclick = playerTurn;
+    // заполнение поля info данными о правилах раунда
+    if (FIELD_SIZE <= 4) {
+        document.querySelector('.info').innerHTML = '3-TO-WIN';
+    } else {
+        document.querySelector('.info').innerHTML = '5-TO-WIN';
     }
+    
 }
 
 function playerTurn() {
     // действия по клику производятся над ячейкой, только если она пустая
     if (this.classList[1] === 'empty') {
-        // изменение класса ячейки при клике на нее
+        // изменение класса ячейки при клике на нее с пустой на не пустую
         this.classList.toggle('empty');
         this.classList.toggle('not_empty');
 
-        // установка в ячейку символа ходящего игрока и смена индикатора следующего хода
-        if (isTurnX){
-           this.classList.add('cell_x');
-           document.querySelector('.turn').classList.value = 'turn turn_o';
-        } else {
-           this.classList.add('cell_o');
-           document.querySelector('.turn').classList.value = 'turn turn_x';
-        }
+        // установка в ячейку символа ходящего игрока
+        isTurnX ? this.classList.add('cell_x') : this.classList.add('cell_o');
 
         // перегенерация матрицы игры после каждого хода
         gameMatrixGenerate();
 
         // проверка состояния партии
         let clickedCellXY = this.id.split('-');
+        let emptyCells = document.getElementsByClassName('cell empty');
         // победа достигнута
         if (isWinAchieved(clickedCellXY)) {
             finishTheGameWin();
+        } else 
+        // ничья - пустых клеток больше нет, но победа не достигнута
+        if (emptyCells[0] === undefined) {
+            document.querySelector('.info').innerHTML = 'DRAW';
         }
         // продолжение партии
         else {
+            // смена значка следующего хода
+            isTurnX ? 
+            document.querySelector('.turn').classList.value = 'turn turn_o' : 
+            document.querySelector('.turn').classList.value = 'turn turn_x';
+                
             // переход хода к противнику
             isTurnX = !isTurnX;
         }    
@@ -427,14 +434,14 @@ function isWinAchieved(xy) {
 function finishTheGameWin() {
 
     // смена класса всем ячейкам на not_empty для некликабельности
-    let cells = document.getElementsByClassName('empty');
+    let emptyCells = document.getElementsByClassName('cell empty');
     // проверка, что есть хоть один блок not_empty
-    if (cells[0] !== undefined) { 
+    if (emptyCells[0] !== undefined) { 
         do {
-            cells[0].classList.toggle('not_empty');
-            cells[0].classList.toggle('empty');
+            emptyCells[0].classList.toggle('not_empty');
+            emptyCells[0].classList.toggle('empty');
         }
-        while (cells.length > 0);
+        while (emptyCells.length > 0);
     }
 
     // изменение статистики побед в интерфейсе

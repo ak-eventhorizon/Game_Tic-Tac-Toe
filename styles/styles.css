@@ -105,7 +105,7 @@
 
 .stats {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr;
 }
 
 .stats .stat_left {
@@ -124,18 +124,22 @@
     background-position: right center;
 }
 
+.stats .info {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: auto;
+}
+
 .score {
     font-size: 2rem;
     font-weight: 600;
-    text-align: center;
-    padding: 0 10px;
     margin: auto;
 }
 
 .score_x {
-    margin: auto 10vmin auto auto;
+    margin: auto -7vmin auto auto;
 }
 
 .score_o {
-    margin: auto auto auto 10vmin;
+    margin: auto auto auto -7vmin;
 }
